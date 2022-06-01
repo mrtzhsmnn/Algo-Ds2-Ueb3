@@ -3,7 +3,6 @@
 Mit Nico Haisch, Friedrich Röntsch und Moritz Hausmann.
 Abgabetermin ist der ??.??.????.
 
-**JEDE FUNKTION AUßER DUMP DARF NUR LOGARITHMISCHE LAUFZEIT HABEN**
 
 ## COMMIT-ETIQUETTE:
 An folgende Commit-Etiquette ist sich zu halten.
