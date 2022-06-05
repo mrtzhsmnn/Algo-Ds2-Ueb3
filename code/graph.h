@@ -171,8 +171,31 @@ struct SP : Pred<V>, Dist<V, double> {};
 
 // Breitensuche im Graphen g mit Startknoten s ausführen
 // und das Ergebnis in res speichern.
-template <typename V, typename G>
-void bfs (G g, V s, BFS<V>& res)
+template <typename G, typename V>
+void bfs (G g, V s, BFS<V>& res) {
+    for (V v: g.vertrices()) {
+        if (v != s) {
+            res.pred[v] = res.NIL;
+            res.dist[v] = res.INF;
+        }
+    }
+    res.dist[s] = 0;
+    res.pred[s] = res.NIL;
+    list<V> fifo;
+    fifo.push_back(s);
+    while (fifo.size() > 0) {
+        V u = fifo.front();
+        fifo.pop_front();
+        for (V v: g.successors(u)) {
+            if (res.dist[v] == res.INF) {
+                res.dist[v] = res.dist[u] + 1;
+                res.pred[v] = u;
+                fifo.push_back(v);
+            }
+        }
+    }
+}
+
 
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
