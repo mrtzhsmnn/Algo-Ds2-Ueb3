@@ -278,9 +278,15 @@ bool bellmanFord (G g, V s, SP<V>& res){
     for (V v: g.vertrices()) {
         res.dist[v]= res.INF;
         res.pred[v]=res.NIL;
+        res.dist[s]=0;
+    }
+    for(int i=0; i < g.size() -1 ; ++i){
+        for(){
+
+        }
     }
     res.dist[s]=0;
-    for (int i = 0; i < V.size -1; ++i) {
+    for (int i = 0; i < g.size() -1; ++i) {
         
     }
 }
