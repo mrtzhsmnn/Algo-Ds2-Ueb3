@@ -30,19 +30,19 @@ struct Graph {
 
     // Container mit allen Knoten des Graphen liefern.
     list<V> vertices () {
-	// Alle Paare p der Tabelle adj durchlaufen
-	// und jeweils ihren ersten Bestandteil p.first
-	// am Ende der Liste vs anfügen.
-	list<V> vs;
-	for (pair<V, list<V>> p : adj) vs.push_back(p.first);
-	return vs;
+        // Alle Paare p der Tabelle adj durchlaufen
+        // und jeweils ihren ersten Bestandteil p.first
+        // am Ende der Liste vs anfügen.
+        list<V> vs;
+        for (pair<V, list<V>> p : adj) vs.push_back(p.first);
+        return vs;
     }
 
     // Container mit allen Nachfolgern des Knotens v liefern.
     list<V> successors (V v) {
-	// Die zum Knoten v in der Tabelle adj gespeicherte
-	// Liste von Nachfolgern liefern.
-	return adj[v];
+        // Die zum Knoten v in der Tabelle adj gespeicherte
+        // Liste von Nachfolgern liefern.
+        return adj[v];
     }
 
     // Transponierten Graphen als neues, unabhängiges Objekt liefern.
@@ -57,6 +57,14 @@ struct Graph {
 	// Knoten v enthält, erzeugt a[v] automatisch einen neuen
 	// Eintrag mit einer leeren Liste von Nachfolgern, auf die
 	// direkt push_back angewandt werden kann.
+        map<V, list<V>> newadj;
+        for (V u: vertices()) {
+            newadj.insert(V(u));
+            for (V v: successors(u)){
+                newadj[u].push_back(v);
+            }
+        }
+        return Graph<V>(newadj);
     }
 };
 
@@ -81,21 +89,21 @@ struct WeightedGraph : Graph<V> {
 	// mit der darin enthaltenen Information die (von Graph<V>
 	// geerbte) einfache Adjazenzlistendarstellung adj und die
 	// Gewichtstabelle wt passend füllen. 
-	for (auto p : a) {
-	    V u = p.first;
-	    Graph<V>::adj[u];
-	    for (auto q : p.second) {
-		V v = q.first;
-		double w = q.second;
-		Graph<V>::adj[u].push_back(v);
-		wt[{ u, v }] = w;
-	    }
-	}
+        for (auto p : a) {
+            V u = p.first;
+            Graph<V>::adj[u];
+            for (auto q : p.second) {
+                V v = q.first;
+                double w = q.second;
+                Graph<V>::adj[u].push_back(v);
+                wt[{ u, v }] = w;
+            }
+        }
     }
 
     // Gewicht der Kante (u, v) liefern.
     double weight (V u, V v) {
-	return wt[{ u, v }];
+	    return wt[{ u, v }];
     }
 };
 
@@ -142,7 +150,9 @@ struct Dist {
 // Durch Mehrfachvererbung gebildete Kombination von Pred<V> und
 // Dist<V, uint> mit Elementvariablen pred, NIL, dist und INF.
 template <typename V>
-struct BFS : Pred<V>, Dist<V, uint> {};
+struct BFS : Pred<V>, Dist<V, uint> { //muss man das implementieren?
+
+};
 
 // Ergebnis einer Tiefensuche.
 template <typename V>
@@ -202,15 +212,26 @@ void bfs (G g, V s, BFS<V>& res) {
 // Reihenfolge des Containers g.vertices() durchlaufen.
 template <typename V, typename G>
 void dfs (G g, DFS<V>& res){
-    res.pred[u] = res.NIL;
-    res.dist[u] = //kein plan was der zeitwert ist...
-    for (V v: g.successors(u)) {
-        if(!v.visited){
-            res.pred[v]=u;
-            dfs(v,res);
+    map<V,pair<int,int>> farbe;
+    int zeitwert = 0;
+    for(V u : g.vertices){
+        if (farbe.find(u)==farbe.end()){ // weiß ?  (white priviledge)
+            res.pred[u] = res.NIL;
+            res.dist[u] = zeitwert; // farbe[u].first = zeitwert;
+            zeitwert++;
+            for (V v: g.successors(u)) {
+                if(farbe.find(v)==farbe.end()){
+                    res.pred[v]=u;
+                    dfs(v,res);
+                }
+            }
+            //Setze keinplanwasdasist(u) =zeitwert;
         }
+        else {
+
+        }
+
     }
-    //Setze keinplanwasdasist(u) auf kein plan was der Zeiwert ist...
 }
 
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
