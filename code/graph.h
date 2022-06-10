@@ -201,7 +201,17 @@ void bfs (G g, V s, BFS<V>& res) {
 // In der Hauptschleife des Algorithmus werden die Knoten in der
 // Reihenfolge des Containers g.vertices() durchlaufen.
 template <typename V, typename G>
-void dfs (G g, DFS<V>& res)
+void dfs (G g, DFS<V>& res){
+    res.pred[u] = res.NIL;
+    res.dist[u] = //kein plan was der zeitwert ist...
+    for (V v: g.successors(u)) {
+        if(!v.visited){
+            res.pred[v]=u;
+            dfs(v,res);
+        }
+    }
+    //Setze keinplanwasdasist(u) auf kein plan was der Zeiwert ist...
+}
 
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
@@ -243,7 +253,16 @@ void prim (G g, V s, Pred<V>& res)
 // erreichbaren Zyklus mit negativem Gewicht gibt, andernfalls false.
 // (Im zweiten Fall darf der Inhalt von res danach undefiniert sein.)
 template <typename V, typename G>
-bool bellmanFord (G g, V s, SP<V>& res)
+bool bellmanFord (G g, V s, SP<V>& res){
+    for (V v: g.vertrices()) {
+        res.dist[v]= res.INF;
+        res.pred[v]=res.NIL;
+    }
+    res.dist[s]=0;
+    for (int i = 0; i < V.size -1; ++i) {
+        
+    }
+}
 
 // Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
 // dem Algorithmus von Dijkstra ermitteln und das Ergebnis in res
