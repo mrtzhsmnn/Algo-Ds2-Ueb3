@@ -210,27 +210,25 @@ void bfs (G g, V s, BFS<V>& res) {
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
 // Reihenfolge des Containers g.vertices() durchlaufen.
+// ACHTUNG: ANFANGSZEIT WIRD in res.det und ABSCHLUSSZEIT in res.fin gespeichert. Index ist der Knoten
 template <typename V, typename G>
 void dfs (G g, DFS<V>& res){
-    map<V,pair<int,int>> farbe;
-    int zeitwert = 0;
-    for(V u : g.vertices){
-        if (farbe.find(u)==farbe.end()){ // weiß ?  (white priviledge)
-            res.pred[u] = res.NIL;
-            res.dist[u] = zeitwert; // farbe[u].first = zeitwert;
-            zeitwert++;
+    int zeitwert = 1;
+    for(V u : g.vertices){ // für jeden Knoten u
+        if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
+            res.pred[u] = res.NIL; // Setze Vorgänger auf nil
+            res.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
+            res.det[u] = zeitwert; // Anfangszeit auf zeitwert
+            zeitwert++; // zeitwert Iterieren
             for (V v: g.successors(u)) {
-                if(farbe.find(v)==farbe.end()){
+                if(!res.det.count(v)){
                     res.pred[v]=u;
                     dfs(v,res);
                 }
             }
-            //Setze keinplanwasdasist(u) =zeitwert;
+            res.fin[u] = zeitwert;
+            zeitwert++;
         }
-        else {
-
-        }
-
     }
 }
 
@@ -238,7 +236,25 @@ void dfs (G g, DFS<V>& res){
 // In der Hauptschleife des Algorithmus werden die Knoten in der
 // Reihenfolge der Liste vs durchlaufen.
 template <typename V, typename G>
-void dfs (G g, list<V> vs, DFS<V>& res)
+void dfs (G g, list<V> vs, DFS<V>& res){
+    int zeitwert = 1;
+    for(V u : vs){ // für jeden Knoten u
+        if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
+            res.pred[u] = res.NIL; // Setze Vorgänger auf nil
+            res.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
+            res.det[u] = zeitwert; // Anfangszeit auf zeitwert
+            zeitwert++; // zeitwert Iterieren
+            for (V v: g.successors(u)) {
+                if(!res.det.count(v)){
+                    res.pred[v]=u;
+                    dfs(v,res);
+                }
+            }
+            res.fin[u] = zeitwert;
+            zeitwert++;
+        }
+    }
+}
 
 // Topologische Sortierung des Graphen g ausführen und das Ergebnis
 // als Liste von Knoten in seq speichern.
