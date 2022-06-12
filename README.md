@@ -20,8 +20,25 @@ Pls update the checklist with
 ### Friedrich:
  
 ### Moritz:
- 
 
+# Grundlagen zu Graphen:
+### Graph:
+Ein Graph ist ein Paar `G = (V,E)` wobei `V` die endliche Menge von **Knoten** und `E` eine zugehörige Menge an **Kanten** ist.
+Graphen können gerichtet oder ungerichtet sein. Diese unterscheiden sich in der Definition, dabei dass der gerichtete Graph ein Paar als Kante hat, 
+wohingegen ein ungerichteter Graph eine Menge als Kante hat.
+Ein ungerichteter Graph kann dem folgend auch als gerichteter Graph aufgefasst werden.
+Führt eine Kante auf sich selbst zu, wird sie als eine **Schlinge** bezeichnet.
+### Adjazenzlisten und -matrizen:
+Wenn es in einem Graph eine Kante von einem Knoten ``u`` zu einem anderen Knoten ``v`` gibt, heisst diese Kante `(u,v)`, wobei `u` der *Vorgänger*
+und `v` der _Nachfolger_ von `u` ist. Eine **Adjazenzliste** eines Knotens enthält alle seine Nachfolger, in beliebiger Reihenfolge.
+Die **Adjazenzlistendarstellung** eines Graphen besteht aus einer **Adjazenzliste** für jeden Knoten.
+Die **Adjazenzmatrizen** sind eine **Adjazenzliste** in Form einer **Matrix**.
+Bei ungerichteten Graphen sind Adjazenzmatrizen symmetrisch, bei gerichteten Graphen nicht.
+Die Adjazenzlistendarstellung eines Graphen `G = (V,E)` hat die Größe ``O(|V| + |E|)``, die zugehörige Adjazenzmatrix hat die Größe ``O(|V|^2)``.
+### Weitere Begriffe:
+- **(einfacher) Weg**: von einem Knoten `u` zu einem Knoten `v` ist eine Folge paarweise verschiedener Knoten.
+- **Länge**: Die Länge eines Weges sind die Anzahl der Kanten.
+- **Erreichbarkeit**: Ein Knoten ist erreichbar, wenn es einen Weg zu ihm gibt.
 # Überlegungen Zu den Aufgaben 
 **Algo Übung 3**  
 
