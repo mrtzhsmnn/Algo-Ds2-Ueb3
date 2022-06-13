@@ -262,7 +262,29 @@ void dfs (G g, list<V> vs, DFS<V>& res){
 // false, wenn der Graph einen Zyklus enthält.
 // (Im zweiten Fall darf der Inhalt von seq danach undefiniert sein.)
 template <typename V, typename G>
-bool topsort (G g, list<V>& seq)
+bool topsort (G g, list<V>& seq){
+    int zeitwert = 1;
+    for(V u : g.vertices){ // für jeden Knoten u
+        if (!seq.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
+            seq.pred[u] = seq.NIL; // Setze Vorgänger auf nil
+            seq.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
+            seq.det[u] = zeitwert; // Anfangszeit auf zeitwert
+            zeitwert++; // zeitwert Iterieren
+            for (V v: g.successors(u)) {
+                if(!seq.det.count(v)){
+                    if (seq.det.count(u)&&!seq.fin.count(u))
+                    seq.pred[v]=u;
+                    dfs(v,seq);
+                }
+            }
+            seq.fin[u] = zeitwert;
+            zeitwert++;
+            seq.push_back(u);
+        }
+    }
+
+
+}
 
 // Die starken Zusammenhangskomponenten des Graphen g ermitteln
 // und das Ergebnis als Liste von Listen von Knoten in res speichern.
