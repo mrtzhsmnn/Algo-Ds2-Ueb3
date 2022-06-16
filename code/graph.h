@@ -282,15 +282,28 @@ bool topsort (G g, list<V>& seq){
             seq.push_back(u);
         }
     }
-
-
 }
 
 // Die starken Zusammenhangskomponenten des Graphen g ermitteln
 // und das Ergebnis als Liste von Listen von Knoten in res speichern.
 // (Jedes Element von res entspricht einer starken Zusammenhangskomponente.)
 template <typename V, typename G>
-void scc (G g, list<list<V>>& res)
+void scc (G g, list<list<V>>& res){
+    // Ergebnisdatenstruktur für die Erste u. zweite Tiefensuche erstellen.
+    DFS<V> firstdfs;
+    DFS<V> seconddfs;
+    // erste DFS ausführen
+    dfs(g,&firstdfs);
+    // Transsexuellen Graph erstellen
+    Graph<V> transgraph = g.transpose;
+    // Tiefensuchenliste umdrehen
+    firstdfs.seq.reverse();
+    // zweite Tiefensuche mit transgraph und umgedrehter tiefensuche liste aus erster dfs aufrufen.
+    dfs(transgraph,firstdfs.seq,&seconddfs);
+
+    /// TIEFENSUCHENWALD???
+
+}
 
 // Minimalgerüst des Graphen g mit dem modifizierten Algorithmus von
 // Prim mit Startknoten s bestimmen und das Ergebnis in res speichern.
@@ -303,7 +316,9 @@ void scc (G g, list<list<V>>& res)
 // Trotzdem kann die Funktion intern natürlich ein entsprechendes
 // Dist-Objekt verwenden.
 template <typename V, typename G>
-void prim (G g, V s, Pred<V>& res)
+void prim (G g, V s, Pred<V>& res){
+
+}
 
 // Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
 // dem Algorithmus von Bellman-Ford ermitteln und das Ergebnis in res
@@ -319,13 +334,13 @@ bool bellmanFord (G g, V s, SP<V>& res){
     }
     res.dist[s]=0;
     for(int i=0; i < g.size() -1 ; ++i){
-        for(){
-
-        }
+//        for(){
+//                      //commented to remove error
+//        }
     }
     res.dist[s]=0;
     for (int i = 0; i < g.size() -1; ++i) {
-        if(res.dist[u]+)
+//        if(res.dist[u]+)   //commented to remove error
     }
 }
 
