@@ -23,20 +23,19 @@ struct Entry {
 template <typename P, typename D>
 struct PrioQueue {
     using Entry = ::Entry<P, D>;
-
     struct LessThan {
-	bool operator() (Entry* e1, Entry* e2) const {
-	    if (e1->prio < e2->prio) return true;
-	    if (e2->prio < e1->prio) return false;
-	    return e1 < e2;
-	}
+	    bool operator() (Entry* e1, Entry* e2) const
+        {
+	        if (e1->prio < e2->prio) return true;
+	        if (e2->prio < e1->prio) return false;
+	        return e1 < e2;
+	    }
     };
-
     std::set<Entry*, LessThan> entries;
 
     // Ist die Warteschlange momentan leer?
     bool isEmpty () {
-	return entries.empty();
+	    return entries.empty();
     }
 
     // Neuen Eintrag mit PrioritÃ¤t p und zusÃ¤tzlichen Daten d erzeugen,
@@ -45,47 +44,47 @@ struct PrioQueue {
     // werden, nachdem sie mit extractMinimum oder remove aus der
     // Warteschlange entfernt wurden und nicht mehr gebraucht werden.)
     Entry* insert (P p, D d) {
-	Entry* e = new Entry(p, d);
-	entries.insert(e);
-	return e;
+	    Entry* e = new Entry(p, d);
+	    entries.insert(e);
+	    return e;
     }
 
     // Eintrag mit minimaler PrioritÃ¤t liefern.
     // (Nullzeiger bei einer leeren Warteschlange.)
     Entry* minimum () {
-	if (entries.empty()) return nullptr;
-	return *entries.begin();
+	    if (entries.empty()) return nullptr;
+	    return *entries.begin();
     }
 
     // Eintrag mit minimaler PrioritÃ¤t liefern
     // und aus der Warteschlange entfernen (aber nicht freigeben).
     // (Bei einer leeren Halde wirkungslos mit Nullzeiger als Resultatwert.)
     Entry* extractMinimum () {
-	Entry* e = minimum();
-	if (e) entries.erase(entries.begin());
-	return e;
+	    Entry* e = minimum();
+	    if (e) entries.erase(entries.begin());
+	    return e;
     }
 
     // EnthÃ¤lt die Warteschlange den Eintrag e?
     // (Resultatwert false, wenn e ein Nullzeiger ist.)
     bool contains (Entry* e) {
-	return entries.count(e);
+	    return entries.count(e);
     }
 
     // Eintrag e aus der Warteschlange entfernen (aber nicht freigeben).
     // (Wirkungslos mit Resultatwert false, wenn e ein Nullzeiger ist
     // oder e nicht zur aktuellen Warteschlange gehÃ¶rt.)
     bool remove (Entry* e) {
-	return entries.erase(e);
+	    return entries.erase(e);
     }
 
     // PrioritÃ¤t des Eintrags e auf p Ã¤ndern.
     // (Wirkungslos mit Resultatwert false, wenn e ein Nullzeiger ist
     // oder e nicht zur aktuellen Warteschlange gehÃ¶rt.)
     bool changePrio (Entry* e, P p) {
-	if (!remove(e)) return false;
-	e->prio = p;
-	entries.insert(e);
-	return true;
+        if (!remove(e)) return false;
+        e->prio = p;
+        entries.insert(e);
+        return true;
     }
 };
