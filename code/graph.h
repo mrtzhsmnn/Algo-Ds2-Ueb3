@@ -317,7 +317,21 @@ void scc (G g, list<list<V>>& res){
 // Dist-Objekt verwenden.
 template <typename V, typename G>
 void prim (G g, V s, Pred<V>& res){
-
+    // neue minimum-Vorrangwarteschlange Q erstellen
+    PrioQueue<uint, V> Q;
+    // für jeden Knoten v el. V:
+    for (V v: g.vertices()){
+        // v Objekt mit unendlicher prio einfügen
+        Q.insert(res.INF,v);
+        // Vorgänger von v auf NIL setzen
+        g.pred[v] = res.NIL;
+    }
+    // solange Q nicht leer ist:
+    while (!Q.isEmpty()) {
+        Entry<uint,V> u;
+        u = Q.minimum();
+        /// Nachfolger von u??
+    }
 }
 
 // Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
