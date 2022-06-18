@@ -156,7 +156,7 @@ struct BFS : Pred<V>, Dist<V, uint> { //muss man das implementieren?
 
 // Ergebnis einer Tiefensuche.
 template <typename V>
-struct DFS {
+struct DFS : Pred<V>, Dist<V, uint> {
     // Tabellen zur Speicherung der Entdeckungszeit det[v] und der
     // Abschlusszeit fin[v] eines Knotens v.
     // Beide Zeitwerte liegen zwischen 1 und der doppelten Knotenzahl
@@ -183,7 +183,7 @@ struct SP : Pred<V>, Dist<V, double> {};
 // und das Ergebnis in res speichern.
 template <typename G, typename V>
 void bfs (G g, V s, BFS<V>& res) {
-    for (V v: g.vertrices()) {
+    for (V v: g.vertices()) {
         if (v != s) {
             res.pred[v] = res.NIL;
             res.dist[v] = res.INF;
@@ -293,16 +293,25 @@ void scc (G g, list<list<V>>& res){
     DFS<V> firstdfs;
     DFS<V> seconddfs;
     // erste DFS ausführen
-    dfs(g,&firstdfs);
+    dfs(g,firstdfs);
     // Transsexuellen Graph erstellen
     Graph<V> transgraph = g.transpose;
     // Tiefensuchenliste umdrehen
     firstdfs.seq.reverse();
     // zweite Tiefensuche mit transgraph und umgedrehter tiefensuche liste aus erster dfs aufrufen.
-    dfs(transgraph,firstdfs.seq,&seconddfs);
-
-    /// TIEFENSUCHENWALD???
-
+    dfs(transgraph,firstdfs.seq,seconddfs);
+    for (V u: seconddfs.seq){
+        if (seconddfs.pred[u]==seconddfs.NIL){
+            list<V> scc;
+            scc.push_back(u);
+            for(V v: g.successors(u)){
+                if (seconddfs.fin[u]<seconddfs.det[v]){
+                    scc.push_back(v);
+                }
+            }
+            res.push_back(scc);
+        }
+    }
 }
 
 // Minimalgerüst des Graphen g mit dem modifizierten Algorithmus von
@@ -340,37 +349,37 @@ void prim (G g, V s, Pred<V>& res){
 // Resultatwert true, wenn es im Graphen keinen vom Startknoten aus
 // erreichbaren Zyklus mit negativem Gewicht gibt, andernfalls false.
 // (Im zweiten Fall darf der Inhalt von res danach undefiniert sein.)
-template <typename V, typename G>
-bool bellmanFord (G g, V s, SP<V>& res){
-    for (V v: g.vertrices()) {
-        res.dist[v]= res.INF;
-        res.pred[v]=res.NIL;
-    }
-    res.dist[s]=0;
-    for(int i=0; i < g.size() -1 ; ++i){
-//        for(){
-//                      //commented to remove error
-//        }
-    }
-    res.dist[s]=0;
-    for (int i = 0; i < g.size() -1; ++i) {
-//        if(res.dist[u]+)   //commented to remove error
-    }
-}
-
-// Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
-// dem Algorithmus von Dijkstra ermitteln und das Ergebnis in res
-// speichern.
-// Die Kanten des Graphen dürfen keine negativen Gewichte besitzen.
-// (Dies muss nicht überprüft werden.)
-template <typename V, typename G>
-void dijkstra (G g, V s, SP<V>& res){
-    for (V v: g.vertrices()) {
-        res.dist[v]= res.INF;
-        res.pred[v]=res.NIL;
-    }
-    res.dist[s]=0;
-    for (V v: g.vertrices()){
-
-    }
-}
+//template <typename V, typename G>
+//bool bellmanFord (G g, V s, SP<V>& res){
+//    for (V v: g.vertrices()) {
+//        res.dist[v]= res.INF;
+//        res.pred[v]=res.NIL;
+//    }
+//    res.dist[s]=0;
+//    for(int i=0; i < g.size() -1 ; ++i){
+////        for(){
+////                      //commented to remove error
+////        }
+//    }
+//    res.dist[s]=0;
+//    for (int i = 0; i < g.size() -1; ++i) {
+////        if(res.dist[u]+)   //commented to remove error
+//    }
+//}
+//
+//// Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
+//// dem Algorithmus von Dijkstra ermitteln und das Ergebnis in res
+//// speichern.
+//// Die Kanten des Graphen dürfen keine negativen Gewichte besitzen.
+//// (Dies muss nicht überprüft werden.)
+//template <typename V, typename G>
+//void dijkstra (G g, V s, SP<V>& res){
+//    for (V v: g.vertrices()) {
+//        res.dist[v]= res.INF;
+//        res.pred[v]=res.NIL;
+//    }
+//    res.dist[s]=0;
+//    for (V v: g.vertrices()){
+//
+//    }
+//}
