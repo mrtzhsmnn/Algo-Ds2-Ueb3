@@ -343,9 +343,18 @@ void prim (G g, string s, Pred<V>& res){
     V u=s;
     // solange Q nicht leer ist:
     while (!Q.isEmpty()) {
-        Entry<uint,V> u;
-        u = Q.minimum();
-        /// Nachfolger von u??
+        for (V v: g.successors(u)) {
+            Entry<uint,V> *e;
+            e = new Entry<uint, V>(inf.INF, v);
+            if(Q.contains(e) && g.weight(u,v) < inf.dist[v]){
+                inf.dist[v] = g.weight(u,v);
+                res.pred[v] = u;
+            }
+        }
+        Entry<uint,V> min;
+        min = Q.minimum();
+        u = min.data;
+        res.pred[u] = min.prio;
     }
 }
 
