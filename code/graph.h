@@ -325,16 +325,22 @@ void scc (G g, list<list<V>>& res){
 // Trotzdem kann die Funktion intern natürlich ein entsprechendes
 // Dist-Objekt verwenden.
 template <typename V, typename G>
-void prim (G g, V s, Pred<V>& res){
+void prim (G g, string s, Pred<V>& res){
+    Dist<V,uint> inf;
     // neue minimum-Vorrangwarteschlange Q erstellen
     PrioQueue<uint, V> Q;
     // für jeden Knoten v el. V:
     for (V v: g.vertices()){
-        // v Objekt mit unendlicher prio einfügen
-        Q.insert(res.INF,v);
-        // Vorgänger von v auf NIL setzen
-        g.pred[v] = res.NIL;
+        if (v!=s){
+            // v Objekt mit unendlicher prio einfüge
+            inf.dist[v] = inf.dist;
+            Q.insert(inf.dist[v],v);
+            // Vorgänger von v auf NIL setzen
+            res.pred[v] = res.NIL;
+        }
     }
+    res.pred[s] = res.NIL;
+    V u=s;
     // solange Q nicht leer ist:
     while (!Q.isEmpty()) {
         Entry<uint,V> u;
@@ -349,37 +355,75 @@ void prim (G g, V s, Pred<V>& res){
 // Resultatwert true, wenn es im Graphen keinen vom Startknoten aus
 // erreichbaren Zyklus mit negativem Gewicht gibt, andernfalls false.
 // (Im zweiten Fall darf der Inhalt von res danach undefiniert sein.)
-//template <typename V, typename G>
-//bool bellmanFord (G g, V s, SP<V>& res){
-//    for (V v: g.vertrices()) {
-//        res.dist[v]= res.INF;
-//        res.pred[v]=res.NIL;
-//    }
-//    res.dist[s]=0;
-//    for(int i=0; i < g.size() -1 ; ++i){
-////        for(){
-////                      //commented to remove error
-////        }
-//    }
-//    res.dist[s]=0;
-//    for (int i = 0; i < g.size() -1; ++i) {
-////        if(res.dist[u]+)   //commented to remove error
-//    }
-//}
-//
-//// Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
-//// dem Algorithmus von Dijkstra ermitteln und das Ergebnis in res
-//// speichern.
-//// Die Kanten des Graphen dürfen keine negativen Gewichte besitzen.
-//// (Dies muss nicht überprüft werden.)
-//template <typename V, typename G>
-//void dijkstra (G g, V s, SP<V>& res){
-//    for (V v: g.vertrices()) {
-//        res.dist[v]= res.INF;
-//        res.pred[v]=res.NIL;
-//    }
-//    res.dist[s]=0;
-//    for (V v: g.vertrices()){
-//
-//    }
-//}
+template <typename V, typename G>
+bool bellmanFord (WeightedGraph<string> g, V s, SP<string>& res){
+    for (V v: g.vertices()) {
+        res.dist[v]= res.INF;
+        res.pred[v]=res.NIL;
+    }
+    res.dist[s]=0;
+    //Berechnung der Knotenanzahl
+    int Knoten;
+    for (pair<V, list<V>> p : g.adj) {
+        Knoten++;
+    }
+    //Berechnung der Kantenanzahl
+    int Kanten;
+    for (pair<V, list<V>> p : g.adj){
+        for (V a:p.second){
+            Kanten++;
+        }
+    }
+    for(int i=0; i<Knoten; i++) {
+        for (pair<V, list < V>> p : g.adj) {
+            V u = p.first;
+            for (V v: p.second) {
+                res.dist[v] = res.dist[u] + g.weight(u, v);
+                res.pred[v] = u;
+            }
+        }
+    }
+
+    for (pair<V, list<V>> p : g.adj) {
+        V u = p.first;
+        for (V v: p.second) {
+            if(res.dist[u]+g.weight(u, v)){ //aka delta von u
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
+// dem Algorithmus von Dijkstra ermitteln und das Ergebnis in res
+// speichern.
+// Die Kanten des Graphen dürfen keine negativen Gewichte besitzen.
+// (Dies muss nicht überprüft werden.)
+template <typename V, typename G>
+void dijkstra (G g, V s, SP<V>& res){
+    for (V v: g.vertrices()) {
+        res.dist[v]= res.INF;
+        res.pred[v]=res.NIL;
+    }
+    res.dist[s]=0;
+    PrioQueue<uint, V> Q;
+    for (V v: g.vertrices()){
+        Q.insert(res.dist[v], v);
+    }
+    while(!Q.isEmpty()){
+        Entry<uint,V> min;
+        min = Q.minimum();
+        V u = min.data;
+        res.pred[u] = min.prio;
+        int count=0;
+        for(V v: g.successors(u)){
+            if (count==0){
+                int resmem= res.dist[v];
+            }
+            res.dist[v] = res.dist[u] + g.weight(u, v);
+            res.pred[v] = u;
+            count++;
+        }
+    }
+}
