@@ -1,4 +1,4 @@
-# Algo-Ds2-Ueb2
+# Algo-Ds2-Ueb3
 Übung 3 von Algorithmen und Datenstrukturen 2 im SoSe 2022 and der Hochschule Aalen.
 Mit Nico Haisch, Friedrich Röntsch und Moritz Hausmann.
 Abgabetermin ist der 30.06.2022.
