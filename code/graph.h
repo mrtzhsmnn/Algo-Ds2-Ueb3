@@ -185,7 +185,7 @@ struct SP : Pred<V>, Dist<V, double> {};
 // Breitensuche im Graphen g mit Startknoten s ausführen
 // und das Ergebnis in res speichern.
 template <typename G, typename V>
-void bfs (G g, V s, BFS<V>& res) {
+void bfs (G g, V s, BFS<V>& res) {  //works
     for (V v: g.vertices()) {
         if (v != s) {
             res.pred[v] = res.NIL;
@@ -209,13 +209,15 @@ void bfs (G g, V s, BFS<V>& res) {
     }
 }
 
+template <typename V, typename G>
+void dfsCheckSuccessors (G g, DFS<V>& res, int& zeitwert,V nodeName);
 
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
 // Reihenfolge des Containers g.vertices() durchlaufen.
 // ACHTUNG: ANFANGSZEIT WIRD in res.det und ABSCHLUSSZEIT in res.fin gespeichert. Index ist der Knoten
 template <typename V, typename G>
-void dfs (G g, DFS<V>& res){
+void dfs (G g, DFS<V>& res){//works
     int zeitwert = 1;
     for(V u : g.vertices()){ // für jeden Knoten u
         if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
@@ -229,6 +231,20 @@ void dfs (G g, DFS<V>& res){
         }
     }
 }
+
+template <typename V, typename G>
+void dfsCheckSuccessors (G g, DFS<V>& res, int& zeitwert,V nodeName){
+    for (V v: g.successors(nodeName)) {
+        res.pred[v]=nodeName;
+        if(!res.det.count(v)){
+            res.det[v]=zeitwert++;
+            dfsCheckSuccessors(g,res,zeitwert,v);
+            res.fin[v]=zeitwert++;
+            res.seq.push_back(v);
+        }
+    }
+}
+
 
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
