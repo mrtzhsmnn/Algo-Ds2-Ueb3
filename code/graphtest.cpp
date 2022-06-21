@@ -28,6 +28,17 @@ Graph<V>* graphs [] = {
 	{ "B", { } },		// Keine Kanten B -> ...
 	{ "C", { { "C", 4 } } }	// Kante C -> C mit Gewicht 4.
     }),
+
+    new Graph<string>({
+    { "0", {"1","4" } },
+    { "1", { "0","2","5"} },
+    { "2", { "4" } },
+    { "3", { "1","5" } },
+    { "4", { "2" } },
+    { "5", {  } },
+    { "6", { "2","5" } },
+    { "7", { "6" } },
+    }),
 };
 
 // Weg vom Startknoten s zum Knoten v anhand der Vorgängerinformation
@@ -62,21 +73,21 @@ int main (int argc, char* argv []) {
 
     // Gewünschten Algorithmus ausführen und sein Ergebnis ausgeben.
     if (a == "bfs") {
-	BFS<V> res;
-	bfs(*g, s, res);
-	for (V v : g->vertices()) {
-	    path(s, v, res);
-	    uint d = res.dist[v];
-	    if (d == res.INF) cout << " inf" << endl;
-	    else cout << " " << d << endl;
-	}
+        BFS<V> res;
+        bfs(*g, s, res);
+        for (V v : g->vertices()) {
+            path(s, v, res);
+            uint d = res.dist[v];
+            if (d == res.INF) cout << " inf" << endl;
+            else cout << " " << d << endl;
+        }
     }
     else if (a == "dfs") {
-	DFS<V> res;
-	dfs(*g, res);
-	for (V v : res.seq) {
-	    cout << v << " " << res.det[v] << " " << res.fin[v] << endl;
-	}
+        DFS<V> res;
+        dfs(*g, res);
+        for (V v : res.seq) {
+            cout << v << " " << res.det[v] << " " << res.fin[v] << endl;
+	    }
     }
     else if (a == "sort") {
 	list<V> res;
@@ -118,7 +129,7 @@ int main (int argc, char* argv []) {
     }
     else if (a == "dijk") {
 	SP<V> res;
-	dijkstra(*(WeightedGraph<V>*)g, s, res);
+    dijkstra(*(WeightedGraph<V>*)g, s, res);
 	for (V v : g->vertices()) {
 	    path(s, v, res);
 	    cout << " " << res.dist[v] << endl;
