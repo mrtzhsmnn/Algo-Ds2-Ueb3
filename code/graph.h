@@ -377,13 +377,7 @@ bool bellmanFord (G g, V s, SP<V>& res){
     for (pair<V, list<V>> p : g.adj) {
         Knoten++;
     }
-    //Berechnung der Kantenanzahl
-    int Kanten;
-    for (pair<V, list<V>> p : g.adj){
-        for (V a:p.second){
-            Kanten++;
-        }
-    }
+
     for(int i=0; i<Knoten; i++) {
         for (pair<V, list < V>> p : g.adj) {
             V u = p.first;
@@ -428,12 +422,12 @@ void dijkstra (G g, V s, SP<V>& res){
         res.pred[u] = min->prio;
         int count=0;
         for(V v: g.successors(u)){
-            if (count==0){
-                int resmem= res.dist[v];
-            }
+            int resmem= res.dist[v];
             res.dist[v] = res.dist[u] + g.weight(u, v);
             res.pred[v] = u;
-            count++;
+            if(res.dist[v]<resmem){
+                Q.changePrio(v,res.dist[v]);
+            }
         }
     }
 }
