@@ -264,20 +264,21 @@ void dfs (G g, list<V> vs, DFS<V>& res){
 template <typename V, typename G>
 bool topsort (G g, list<V>& seq){
     int zeitwert = 1;
-    for(V u : g.vertices){ // für jeden Knoten u
-        if (!seq.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
-            seq.pred[u] = seq.NIL; // Setze Vorgänger auf nil
-            seq.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
-            seq.det[u] = zeitwert; // Anfangszeit auf zeitwert
+    DFS<V> mem;
+    for(V u : g.vertices()){ // für jeden Knoten u
+        if (!mem.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
+            mem.pred[u] = mem.NIL; // Setze Vorgänger auf nil
+            //mem.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
+            mem.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
             for (V v: g.successors(u)) {
-                if(!seq.det.count(v)){
-                    if (seq.det.count(u)&&!seq.fin.count(u))
-                    seq.pred[v]=u;
-                    dfs(v,seq);
+                if(!mem.det.count(v)){
+                    if (mem.det.count(u)&&!mem.fin.count(u))
+                    mem.pred[v]=u;
+                    dfs(g,g.successors(v),mem);
                 }
             }
-            seq.fin[u] = zeitwert;
+            mem.fin[u] = zeitwert;
             zeitwert++;
             seq.push_back(u);
         }
@@ -328,7 +329,7 @@ template <typename V, typename G>
 void prim (G g, string s, Pred<V>& res){
     Dist<V,uint> inf;
     // neue minimum-Vorrangwarteschlange Q erstellen
-    PrioQueue<uint, V> Q;
+    PrioQueue<int, V> Q;
     // für jeden Knoten v el. V:
     for (V v: g.vertices()){
         if (v!=s){
@@ -344,14 +345,14 @@ void prim (G g, string s, Pred<V>& res){
     // solange Q nicht leer ist:
     while (!Q.isEmpty()) {
         for (V v: g.successors(u)) {
-            Entry<uint,V> *e;
-            e = new Entry<uint, V>(inf.INF, v);
+            Entry<int,V> *e;
+            e = new Entry<int, V>(inf.INF, v);
             if(Q.contains(e) && g.weight(u,v) < inf.dist[v]){
                 inf.dist[v] = g.weight(u,v);
                 res.pred[v] = u;
             }
         }
-        Entry<uint,V> min;
+        Entry<int,V> min;
         min = Q.minimum();
         u = min.data;
         res.pred[u] = min.prio;
@@ -365,10 +366,10 @@ void prim (G g, string s, Pred<V>& res){
 // erreichbaren Zyklus mit negativem Gewicht gibt, andernfalls false.
 // (Im zweiten Fall darf der Inhalt von res danach undefiniert sein.)
 template <typename V, typename G>
-bool bellmanFord (WeightedGraph<string> g, V s, SP<string>& res){
+bool bellmanFord (G g, V s, SP<V>& res){
     for (V v: g.vertices()) {
-        res.dist[v]= res.INF;
-        res.pred[v]=res.NIL;
+        res.dist[v] = res.INF;
+        res.pred[v] = res.NIL;
     }
     res.dist[s]=0;
     //Berechnung der Knotenanzahl
@@ -411,20 +412,20 @@ bool bellmanFord (WeightedGraph<string> g, V s, SP<string>& res){
 // (Dies muss nicht überprüft werden.)
 template <typename V, typename G>
 void dijkstra (G g, V s, SP<V>& res){
-    for (V v: g.vertrices()) {
+    for (V v: g.vertices()) {
         res.dist[v]= res.INF;
         res.pred[v]=res.NIL;
     }
     res.dist[s]=0;
     PrioQueue<uint, V> Q;
-    for (V v: g.vertrices()){
+    for (V v: g.vertices()){
         Q.insert(res.dist[v], v);
     }
     while(!Q.isEmpty()){
-        Entry<uint,V> min;
+        Entry<uint,V>* min;
         min = Q.minimum();
-        V u = min.data;
-        res.pred[u] = min.prio;
+        V u = min->data;
+        res.pred[u] = min->prio;
         int count=0;
         for(V v: g.successors(u)){
             if (count==0){
