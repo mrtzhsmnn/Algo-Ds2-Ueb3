@@ -13,6 +13,7 @@ using V = string;
 // gespeichert werden kÃ¶nnen, werden Zeiger auf den Basistyp Graph<V>
 // gespeichert, die bei Bedarf in Zeiger auf WeightedGraph<V>
 // umgewandelt werden.
+
 Graph<V>* graphs [] = {
     // Beispiel eines ungewichteten Graphen.
     new Graph<string>({
@@ -54,6 +55,7 @@ void path (V s, V v, Pred<V>& res) {
 // Graph ausgewÃ¤hlt werden.)
 // Auswahl des Startknotens durch das optionale dritte
 // Kommandozeilenargument (Standardwert ist "A").
+
 int main (int argc, char* argv []) {
     // Kommandozeilenargumente.
     string a = argv[1];				// Algorithmus.
