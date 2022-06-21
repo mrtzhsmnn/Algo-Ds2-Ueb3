@@ -1,7 +1,11 @@
 #include <limits>
 #include <list>
 #include <map>
-#include <utility>	// pair
+#include <utility>	// pair#
+
+/// TODO REMOVE
+#include <stdio.h>
+#include<iostream>
 
 #include "prioqueue.h"
 
@@ -59,9 +63,8 @@ struct Graph {
 	// direkt push_back angewandt werden kann.
         map<V, list<V>> newadj;
         for (V u: vertices()) {
-            newadj.insert(V(u));
             for (V v: successors(u)){
-                newadj[u].push_back(v);
+                newadj[v].push_back(u);
             }
         }
         return Graph<V>(newadj);
@@ -214,20 +217,15 @@ void bfs (G g, V s, BFS<V>& res) {
 template <typename V, typename G>
 void dfs (G g, DFS<V>& res){
     int zeitwert = 1;
-    for(V u : g.vertices){ // für jeden Knoten u
+    for(V u : g.vertices()){ // für jeden Knoten u
         if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
             res.pred[u] = res.NIL; // Setze Vorgänger auf nil
-            res.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
             res.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
-            for (V v: g.successors(u)) {
-                if(!res.det.count(v)){
-                    res.pred[v]=u;
-                    dfs(v,res);
-                }
-            }
+            dfsCheckSuccessors(g,res,zeitwert,u);
             res.fin[u] = zeitwert;
             zeitwert++;
+            res.seq.push_back(u);
         }
     }
 }
@@ -241,19 +239,44 @@ void dfs (G g, list<V> vs, DFS<V>& res){
     for(V u : vs){ // für jeden Knoten u
         if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
             res.pred[u] = res.NIL; // Setze Vorgänger auf nil
-            res.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
             res.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
             for (V v: g.successors(u)) {
                 if(!res.det.count(v)){
                     res.pred[v]=u;
-                    dfs(v,res);
+                    dfs(g,g.successors(v),res);
                 }
             }
             res.fin[u] = zeitwert;
             zeitwert++;
         }
     }
+}
+
+
+
+template <typename V, typename G>
+bool extdfs (G g, list<V> vs, DFS<V>& res, list<V>& seq){
+    int zeitwert = 1;
+    for(V u : vs){ // für jeden Knoten u
+        if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
+            res.pred[u] = res.NIL; // Setze Vorgänger auf nil
+            res.det[u] = zeitwert; // Anfangszeit auf zeitwert
+            zeitwert++; // zeitwert Iterieren
+            for (V v: g.successors(u)) {
+                if(!res.det.count(v)){
+                    res.pred[v]=u;
+                    dfsCheckSuccessors(g,res,zeitwert,v);
+                } else if (!res.fin.count(v)) { // Zyklus!
+                    return false;
+                }
+            }
+            res.fin[u] = zeitwert;
+            zeitwert++;
+            seq.push_back(u);
+        }
+    }
+    return true;
 }
 
 // Topologische Sortierung des Graphen g ausführen und das Ergebnis
@@ -264,18 +287,18 @@ void dfs (G g, list<V> vs, DFS<V>& res){
 template <typename V, typename G>
 bool topsort (G g, list<V>& seq){
     int zeitwert = 1;
+    bool kreisfrei;
     DFS<V> mem;
     for(V u : g.vertices()){ // für jeden Knoten u
         if (!mem.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
             mem.pred[u] = mem.NIL; // Setze Vorgänger auf nil
-            //mem.dist[u] = zeitwert; // Setze Distanz auf zeitwert ///TODO: Fraglich obsolet??
             mem.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
             for (V v: g.successors(u)) {
                 if(!mem.det.count(v)){
-                    if (mem.det.count(u)&&!mem.fin.count(u))
-                    mem.pred[v]=u;
-                    dfs(g,g.successors(v),mem);
+                    if (mem.det.count(u)&&!mem.fin.count(u)) mem.pred[v]=u;
+                    kreisfrei = extdfs(g,g.successors(v),mem,seq);
+                    if (!kreisfrei) return false;
                 }
             }
             mem.fin[u] = zeitwert;
@@ -283,6 +306,7 @@ bool topsort (G g, list<V>& seq){
             seq.push_back(u);
         }
     }
+    return true;
 }
 
 // Die starken Zusammenhangskomponenten des Graphen g ermitteln
@@ -296,7 +320,7 @@ void scc (G g, list<list<V>>& res){
     // erste DFS ausführen
     dfs(g,firstdfs);
     // Transsexuellen Graph erstellen
-    Graph<V> transgraph = g.transpose;
+    Graph<V> transgraph = g.transpose();
     // Tiefensuchenliste umdrehen
     firstdfs.seq.reverse();
     // zweite Tiefensuche mit transgraph und umgedrehter tiefensuche liste aus erster dfs aufrufen.
@@ -334,7 +358,7 @@ void prim (G g, string s, Pred<V>& res){
     for (V v: g.vertices()){
         if (v!=s){
             // v Objekt mit unendlicher prio einfüge
-            inf.dist[v] = inf.dist;
+            inf.dist[v] = inf.INF;
             Q.insert(inf.dist[v],v);
             // Vorgänger von v auf NIL setzen
             res.pred[v] = res.NIL;
@@ -352,10 +376,10 @@ void prim (G g, string s, Pred<V>& res){
                 res.pred[v] = u;
             }
         }
-        Entry<int,V> min;
+        Entry<int,V>* min;
         min = Q.minimum();
-        u = min.data;
-        res.pred[u] = min.prio;
+        u = min->data;
+        res.pred[u] = min->prio;
     }
 }
 
@@ -422,11 +446,17 @@ void dijkstra (G g, V s, SP<V>& res){
         res.pred[u] = min->prio;
         int count=0;
         for(V v: g.successors(u)){
-            int resmem= res.dist[v];
+            int resmem = res.dist[v];
             res.dist[v] = res.dist[u] + g.weight(u, v);
             res.pred[v] = u;
+            PrioQueue<uint,V> temp = Q;
+            Entry<uint,V>* tempent;
+            while (!temp.isEmpty()){
+                tempent = temp.extractMinimum();
+                if (tempent->data == v) break;
+            }
             if(res.dist[v]<resmem){
-                Q.changePrio(v,res.dist[v]);
+                Q.changePrio(tempent,res.dist[v]);
             }
         }
     }
