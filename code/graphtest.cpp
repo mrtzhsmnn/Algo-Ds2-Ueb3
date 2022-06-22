@@ -39,6 +39,14 @@ Graph<V>* graphs [] = {
     { "6", { "2","5" } },
     { "7", { "6" } },
     }),
+    //Gewichtetere Hurensohn graph
+    new WeightedGraph<string>({
+          {"A",{{"B",2},{"C",3}}},
+          {"B",{{"A",2}}},		// Keine Kanten B -> ...
+          {"C",{{"A",3},{"C",5}}},	// Kante C -> C mit Gewicht 4.
+          {"D",{{"C",5},{"E",1}}},
+          {"E",{{"D",1}}}
+    }),
 };
 
 // Weg vom Startknoten s zum Knoten v anhand der Vorgängerinformation
