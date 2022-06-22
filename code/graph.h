@@ -366,7 +366,7 @@ void scc (G g, list<list<V>>& res){
 // Trotzdem kann die Funktion intern natürlich ein entsprechendes
 // Dist-Objekt verwenden.
 template <typename V, typename G>
-void prim (G g, string s, Pred<V>& res){
+void prim (G g, V s, Pred<V>& res){
     Dist<V,uint> inf;
     // neue minimum-Vorrangwarteschlange Q erstellen
     PrioQueue<int, V> Q;
