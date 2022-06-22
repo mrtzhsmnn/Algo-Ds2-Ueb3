@@ -369,31 +369,37 @@ template <typename V, typename G>
 void prim (G g, V s, Pred<V>& res){
     Dist<V,uint> inf;
     // neue minimum-Vorrangwarteschlange Q erstellen
-    PrioQueue<int, V> Q;
+    PrioQueue<uint, V> Q;
     // für jeden Knoten v el. V:
+    int c=0;
     for (V v: g.vertices()){
         if (v!=s){
-            // v Objekt mit unendlicher prio einfüge
+            // v Objekt mit unendlicher prio einfügen
             inf.dist[v] = inf.INF;
             Q.insert(inf.dist[v],v);
             // Vorgänger von v auf NIL setzen
             res.pred[v] = res.NIL;
         }
+        else{
+            if(c>0) break;
+            else c++;
+        }
+
     }
     res.pred[s] = res.NIL;
-    V u=s;
+    string u=s;
     // solange Q nicht leer ist:
     while (!Q.isEmpty()) {
         for (V v: g.successors(u)) {
-            Entry<int,V> *e;
-            e = new Entry<int, V>(inf.INF, v);
+            Entry<uint,V> *e;
+            e = new Entry<uint, V>(inf.INF, v);
             if(Q.contains(e) && g.weight(u,v) < inf.dist[v]){
                 inf.dist[v] = g.weight(u,v);
                 res.pred[v] = u;
             }
         }
-        Entry<int,V>* min;
-        min = Q.minimum();
+        Entry<uint ,V>* min;
+        min = Q.extractMinimum();
         u = min->data;
         res.pred[u] = min->prio;
     }
@@ -457,7 +463,7 @@ void dijkstra (G g, V s, SP<V>& res){
     }
     while(!Q.isEmpty()){
         Entry<uint,V>* min;
-        min = Q.minimum();
+        min = Q.extractMinimum();
         V u = min->data;
         res.pred[u] = min->prio;
         int count=0;
