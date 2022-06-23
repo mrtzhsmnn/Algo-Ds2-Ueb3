@@ -251,20 +251,18 @@ void dfsCheckSuccessors (G g, DFS<V>& res, int& zeitwert,V nodeName){
 // Reihenfolge der Liste vs durchlaufen.
 template <typename V, typename G>
 void dfs (G g, list<V> vs, DFS<V>& res){
-    int zeitwert = 1;
+    int zeitwert = 0;
     for(V u : vs){ // für jeden Knoten u
         if (!res.det.count(u)){ // weiß ? (Wenn noch keine Anfangszeit existiert)
             res.pred[u] = res.NIL; // Setze Vorgänger auf nil
-            res.det[u] = zeitwert; // Anfangszeit auf zeitwert
-            zeitwert++; // zeitwert Iterieren
+            res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
             for (V v: g.successors(u)) {
                 if(!res.det.count(v)){
                     res.pred[v]=u;
                     dfs(g,g.successors(v),res);
                 }
             }
-            res.fin[u] = zeitwert;
-            zeitwert++;
+            res.fin[u] = ++zeitwert;
         }
     }
 }
@@ -452,33 +450,26 @@ bool bellmanFord (G g, V s, SP<V>& res){
 // (Dies muss nicht überprüft werden.)
 template <typename V, typename G> ///TODO: needs rework maybe one iteration missing?
 void dijkstra (G g, V s, SP<V>& res){ ///... Error occurs when "dijk 4 A" is called.
-    for (V v: g.vertices()) {
-        res.dist[v]= res.INF;
-        res.pred[v]=res.NIL;
+    for (V v: g.vertices()) { // 1.
+        res.dist[v] = res.INF;
+        res.pred[v] = res.NIL;
     }
+    map<V,Entry<double,V>*> ventr;
     res.dist[s]=0;
-    PrioQueue<uint, V> Q;
-    for (V v: g.vertices()){
-        Q.insert(res.dist[v], v);
+    PrioQueue<double, V> Q;
+    for (V v: g.vertices()){ // Prioque initialisieren 2.
+        ventr[v] = Q.insert(res.dist[v], v);
     }
-    while(!Q.isEmpty()){
-        Entry<uint,V>* min;
-        min = Q.extractMinimum();
-        V u = min->data;
-        res.pred[u] = min->prio;
-        int count=0;
-        for(V v: g.successors(u)){
-            int resmem = res.dist[v];
-            res.dist[v] = res.dist[u] + g.weight(u, v);
-            res.pred[v] = u;
-            PrioQueue<uint,V> temp = Q;
-            Entry<uint,V>* tempent;
-            while (!temp.isEmpty()){
-                tempent = temp.extractMinimum();
-                if (tempent->data == v) break;
-            }
-            if(res.dist[v]<resmem){
-                Q.changePrio(tempent,res.dist[v]);
+    while(!Q.isEmpty()){ //3 Solange die War teschlange nicht leer ist:
+        Entry<double,V>* min;
+        min = Q.extractMinimum(); // Entnimm knoten mit min. Prio
+        V u = min->data; // nehme daten von knoten
+        //res.pred[u] = min->prio; ///TODO fraglich obsolet
+        for(V v: g.successors(u)){ // Für jeden Nachfolger v von u
+            if((res.dist[u] + g.weight(u,v))<res.dist[v]){
+                res.dist[v] = res.dist[u] + g.weight(u,v);
+                res.pred[v] = u;
+                Q.changePrio(ventr[v],res.dist[v]);
             }
         }
     }
