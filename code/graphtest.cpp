@@ -43,7 +43,7 @@ Graph<V>* graphs [] = {
     new WeightedGraph<string>({
           {"A",{{"B",2},{"C",3}}},
           {"B",{{"A",2}}},		// Keine Kanten B -> ...
-          {"C",{{"A",3},{"C",5}}},	// Kante C -> C mit Gewicht 4.
+          {"C",{{"A",3},{"D",5}}},	// Kante C -> C mit Gewicht 4.
           {"D",{{"C",5},{"E",1}}},
           {"E",{{"D",1}}}
     }),
