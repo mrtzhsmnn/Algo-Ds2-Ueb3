@@ -47,6 +47,13 @@ Graph<V>* graphs [] = {
           {"D",{{"C",5},{"E",1}}},
           {"E",{{"D",1}}}
     }),
+    // Graph aus der Vorlesung
+    new WeightedGraph<string>({
+          {"A",{{"D",4}}},
+          {"B",{{"A",3}}},
+          {"C",{{"A",6},{"B",2}}},
+          {"D",{{"B",5},{"C",1}}}
+    }),
 };
 
 // Weg vom Startknoten s zum Knoten v anhand der Vorgängerinformation

@@ -450,8 +450,8 @@ bool bellmanFord (G g, V s, SP<V>& res){
 // speichern.
 // Die Kanten des Graphen dürfen keine negativen Gewichte besitzen.
 // (Dies muss nicht überprüft werden.)
-template <typename V, typename G>
-void dijkstra (G g, V s, SP<V>& res){
+template <typename V, typename G> ///TODO: needs rework maybe one iteration missing?
+void dijkstra (G g, V s, SP<V>& res){ ///... Error occurs when "dijk 4 A" is called.
     for (V v: g.vertices()) {
         res.dist[v]= res.INF;
         res.pred[v]=res.NIL;
