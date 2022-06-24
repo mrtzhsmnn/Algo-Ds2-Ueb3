@@ -40,7 +40,7 @@ Graph<V> *graphs[] = {
                                   {"6", {"2", "5"}},
                                   {"7", {"6"}},
                           }),
-        //Gewichtetere Hurensohn graph
+        //Gewichteter ungerichteter Graph
         new WeightedGraph<string>({
                                           {"A", {{"B", 2}, {"C", 3}}},
                                           {"B", {{"A", 2}}},        // Keine Kanten B -> ...
@@ -66,6 +66,7 @@ void path(V s, V v, Pred<V> &res) {
     }
     cout << v;
 }
+
 template<typename V>
 void testout(int mode, Graph<V> *g, int graphnr);
 
@@ -77,8 +78,9 @@ int main() {
     }
 
 }
+
 template<typename V>
-void testout(int mode, Graph<V> *g,int graphnr) {
+void testout(int mode, Graph<V> *g, int graphnr) {
     map<int, string> modestring;
     modestring[0] = "BFS";
     modestring[1] = "DFS";
@@ -138,7 +140,10 @@ void testout(int mode, Graph<V> *g,int graphnr) {
         case 4: { // PRIM
             Pred<V> res;
             for (V s: g->vertices()) {
-                if (graphnr < 2) break; // nur für gewichtete Graphen
+                if (graphnr != 3) { // NUR GRAPH 3 ist unger. und gew.
+                    cout << "Nur fuer unger. und gew. Graphen!" << endl;
+                    break; // nur für gewichtete Graphen
+                }
                 cout << "----------------------------------------" << endl;
                 cout << "Startknoten: " << s << endl;
                 cout << "----------------------------------------" << endl;
@@ -152,6 +157,10 @@ void testout(int mode, Graph<V> *g,int graphnr) {
         }
         case 5: { // BELLMAN-FORD
             SP<V> res;
+            if (graphnr > 2) {
+                cout << "Nur fuer gew. Graphen!" << endl;
+                break; // nur für gewichtete Graphen
+            }
             for (V s: g->vertices()) {
                 cout << "----------------------------------------" << endl;
                 cout << "Startknoten: " << s << endl;
@@ -169,6 +178,10 @@ void testout(int mode, Graph<V> *g,int graphnr) {
         }
         case 6: { // DIJKSTRA
             SP<V> res;
+            if (graphnr > 2) {
+                cout << "Nur fuer gew. Graphen!" << endl;
+                break; // nur für gewichtete Graphen
+            }
             for (V s: g->vertices()) {
                 cout << "----------------------------------------" << endl;
                 cout << "Startknoten: " << s << endl;
