@@ -3,10 +3,6 @@
 #include <map>
 #include <utility>    // pair#
 
-/// TODO REMOVE
-#include <stdio.h>
-#include<iostream>
-
 #include "prioqueue.h"
 
 // Vorzeichenlose ganze Zahl.
@@ -67,7 +63,7 @@ struct Graph {
                 newadj[v].push_back(u);
             }
         }
-        return Graph<V>(newadj);
+        return Graph(newadj);
     }
 };
 
@@ -159,7 +155,7 @@ struct BFS : Pred<V>, Dist<V, uint> { //muss man das implementieren?
 
 // Ergebnis einer Tiefensuche.
 template<typename V>
-struct DFS : Pred<V>, Dist<V, uint> {
+struct DFS{
     // Tabellen zur Speicherung der Entdeckungszeit det[v] und der
     // Abschlusszeit fin[v] eines Knotens v.
     // Beide Zeitwerte liegen zwischen 1 und der doppelten Knotenzahl
@@ -222,7 +218,6 @@ void dfs(G g, DFS<V> &res) {//works
     int zeitwert = 1;
     for (V u: g.vertices()) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            res.pred[u] = res.NIL; // Setze Vorgänger auf nil
             res.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
             dfsCheckSuccessors(g, res, zeitwert, u);
@@ -236,7 +231,7 @@ void dfs(G g, DFS<V> &res) {//works
 template<typename V, typename G>
 void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
     for (V v: g.successors(nodeName)) {
-        res.pred[v] = nodeName;
+        //res.pred[v] = nodeName;
         if (!res.det.count(v)) {
             res.det[v] = zeitwert++;
             dfsCheckSuccessors(g, res, zeitwert, v);
@@ -255,11 +250,11 @@ void dfs(G g, list <V> vs, DFS<V> &res) {
     int zeitwert = 0;
     for (V u: vs) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            res.pred[u] = res.NIL; // Setze Vorgänger auf nil
+            //res.pred[u] = res.NIL; // Setze Vorgänger auf nil
             res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
             for (V v: g.successors(u)) {
                 if (!res.det.count(v)) {
-                    res.pred[v] = u;
+                    //res.pred[v] = u;
                     dfs(g, g.successors(v), res);
                 }
             }
@@ -274,12 +269,12 @@ bool extdfs(G g, list <V> vs, DFS<V> &res, list <V> &seq) {
     int zeitwert = 1;
     for (V u: vs) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            res.pred[u] = res.NIL; // Setze Vorgänger auf nil
+            //res.pred[u] = res.NIL; // Setze Vorgänger auf nil
             res.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
             for (V v: g.successors(u)) {
                 if (!res.det.count(v)) {
-                    res.pred[v] = u;
+                    //res.pred[v] = u;
                     dfsCheckSuccessors(g, res, zeitwert, v);
                 } else if (!res.fin.count(v)) { // Zyklus!
                     return false;
@@ -305,12 +300,11 @@ bool topsort(G g, list <V> &seq) {
     DFS<V> mem;
     for (V u: g.vertices()) { // für jeden Knoten u
         if (!mem.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            mem.pred[u] = mem.NIL; // Setze Vorgänger auf nil
             mem.det[u] = zeitwert; // Anfangszeit auf zeitwert
             zeitwert++; // zeitwert Iterieren
             for (V v: g.successors(u)) {
                 if (!mem.det.count(v)) {
-                    if (mem.det.count(u) && !mem.fin.count(u)) mem.pred[v] = u;
+                    //if (mem.det.count(u) && !mem.fin.count(u)) mem.pred[v] = u;
                     kreisfrei = extdfs(g, g.successors(v), mem, seq);
                     if (!kreisfrei) return false;
                 }
@@ -334,22 +328,19 @@ void scc(G g, list <list<V>> &res) {
     // erste DFS ausführen
     dfs(g, firstdfs);
     // Transsexuellen Graph erstellen
-    Graph<V> transgraph = g.transpose();
+    G transgraph = g.transpose();
     // Tiefensuchenliste umdrehen
     firstdfs.seq.reverse();
     // zweite Tiefensuche mit transgraph und umgedrehter tiefensuche liste aus erster dfs aufrufen.
     dfs(transgraph, firstdfs.seq, seconddfs); /// TODO DEBUG
-    for (V u: seconddfs.seq) {
-        if (seconddfs.pred[u] == seconddfs.NIL) {
-            list <V> scc;
-            scc.push_back(u);
-            for (V v: g.successors(u)) {
-                if (seconddfs.fin[u] < seconddfs.det[v]) {
-                    scc.push_back(v);
-                }
-            }
-            res.push_back(scc);
+    while (!seconddfs.seq.empty()){
+        int roottime = seconddfs.fin[seconddfs.seq.front()];
+        list<V> suc;
+        while (roottime >= seconddfs.fin[seconddfs.seq.front()]){
+            suc.push_back(seconddfs.seq.front());
+            seconddfs.seq.pop_front();
         }
+        res.push_back(suc);
     }
 }
 
