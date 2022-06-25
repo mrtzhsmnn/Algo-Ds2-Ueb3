@@ -4,6 +4,7 @@ using namespace std;
 
 int main (int argc, char* argv []) {
     int size, mode,count;
+    srand (time(NULL));
     cout << "Geben Sie die Anzahl der Graphen an: " << endl; // Type a number and press enter
     cin >> count; // Get user input from the keyboard
     cout << "Geben Sie eine Groesse an: " << endl; // Type a number and press enter
