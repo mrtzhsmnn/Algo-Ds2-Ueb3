@@ -389,7 +389,7 @@ void prim(G g, V s, Pred<V> &res) { /// TODO DEBUG
     // solange Q nicht leer ist:
     while (!Q.isEmpty()) {
         for (V v: g.successors(u)) {
-            if (Q.contains(ventr[v]) && g.weight(u, v) < inf.dist[v]) {
+            if (ventr[v]!= nullptr && Q.contains(ventr[v]) && g.weight(u, v) < inf.dist[v]) {
                 Q.changePrio(ventr[v], g.weight(u, v));
                 res.pred[v] = u;
             }
