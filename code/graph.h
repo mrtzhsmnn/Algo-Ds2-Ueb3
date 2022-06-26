@@ -59,6 +59,7 @@ struct Graph {
         // direkt push_back angewandt werden kann.
         map <V, list<V>> newadj;
         for (V u: vertices()) {
+            newadj[u];
             for (V v: successors(u)) {
                 newadj[v].push_back(u);
             }
@@ -215,14 +216,12 @@ void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName);
 // ACHTUNG: ANFANGSZEIT WIRD in res.det und ABSCHLUSSZEIT in res.fin gespeichert. Index ist der Knoten
 template<typename V, typename G>
 void dfs(G g, DFS<V> &res) {//works
-    int zeitwert = 1;
+    int zeitwert = 0;
     for (V u: g.vertices()) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            res.det[u] = zeitwert; // Anfangszeit auf zeitwert
-            zeitwert++; // zeitwert Iterieren
+            res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
             dfsCheckSuccessors(g, res, zeitwert, u);
-            res.fin[u] = zeitwert;
-            zeitwert++;
+            res.fin[u] = ++zeitwert;
             res.seq.push_back(u);
         }
     }
@@ -233,9 +232,9 @@ void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
     for (V v: g.successors(nodeName)) {
         //res.pred[v] = nodeName;
         if (!res.det.count(v)) {
-            res.det[v] = zeitwert++;
+            res.det[v] = ++zeitwert;
             dfsCheckSuccessors(g, res, zeitwert, v);
-            res.fin[v] = zeitwert++;
+            res.fin[v] = ++zeitwert;
             res.seq.push_back(v);
         }
     }
@@ -250,15 +249,10 @@ void dfs(G g, list <V> vs, DFS<V> &res) {
     int zeitwert = 0;
     for (V u: vs) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            //res.pred[u] = res.NIL; // Setze Vorgänger auf nil
             res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
-            for (V v: g.successors(u)) {
-                if (!res.det.count(v)) {
-                    //res.pred[v] = u;
-                    dfs(g, g.successors(v), res);
-                }
-            }
+            dfsCheckSuccessors(g, res, zeitwert, u);
             res.fin[u] = ++zeitwert;
+            res.seq.push_back(u);
         }
     }
 }
@@ -266,22 +260,18 @@ void dfs(G g, list <V> vs, DFS<V> &res) {
 
 template<typename V, typename G>
 bool extdfs(G g, list <V> vs, DFS<V> &res, list <V> &seq) {
-    int zeitwert = 1;
+    int zeitwert = 0;
     for (V u: vs) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            //res.pred[u] = res.NIL; // Setze Vorgänger auf nil
-            res.det[u] = zeitwert; // Anfangszeit auf zeitwert
-            zeitwert++; // zeitwert Iterieren
+            res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
             for (V v: g.successors(u)) {
                 if (!res.det.count(v)) {
-                    //res.pred[v] = u;
                     dfsCheckSuccessors(g, res, zeitwert, v);
                 } else if (!res.fin.count(v)) { // Zyklus!
                     return false;
                 }
             }
-            res.fin[u] = zeitwert;
-            zeitwert++;
+            res.fin[u] = ++zeitwert;
             seq.push_back(u);
         }
     }
@@ -332,11 +322,13 @@ void scc(G g, list <list<V>> &res) {
     // Tiefensuchenliste umdrehen
     firstdfs.seq.reverse();
     // zweite Tiefensuche mit transgraph und umgedrehter tiefensuche liste aus erster dfs aufrufen.
-    dfs(transgraph, firstdfs.seq, seconddfs); /// TODO DEBUG
+    dfs(transgraph, firstdfs.seq, seconddfs);
+    seconddfs.seq.reverse();
     while (!seconddfs.seq.empty()){
-        int roottime = seconddfs.fin[seconddfs.seq.front()];
+        int rootbeg = seconddfs.det[seconddfs.seq.front()];
+        int rootfin = seconddfs.fin[seconddfs.seq.front()];
         list<V> suc;
-        while (roottime >= seconddfs.fin[seconddfs.seq.front()]){
+        while (!seconddfs.seq.empty()&&rootfin >= seconddfs.fin[seconddfs.seq.front()]&&rootbeg<=seconddfs.det[seconddfs.seq.front()]){
             suc.push_back(seconddfs.seq.front());
             seconddfs.seq.pop_front();
         }
@@ -355,24 +347,20 @@ void scc(G g, list <list<V>> &res) {
 // Trotzdem kann die Funktion intern natürlich ein entsprechendes
 // Dist-Objekt verwenden.
 template<typename V, typename G>
-void prim(G g, V s, Pred<V> &res) { /// TODO DEBUG
+void prim(G g, V s, Pred<V> &res) { /// needs work
     Dist<V, double> inf;
     Entry<double, V> *min;
     // neue minimum-Vorrangwarteschlange Q erstellen
     PrioQueue<double, V> Q;
     map < V, Entry<double, V> * > ventr;
     // für jeden Knoten v el. V:
-    int c = 0;
     for (V v: g.vertices()) {
         if (v != s) {
             // v Objekt mit unendlicher prio einfügen
-            inf.dist[v] = inf.INF;
-            ventr[v] = Q.insert(inf.dist[v], v);
+            //inf.dist[v] ;
+            ventr[v] = Q.insert(inf.INF, v);
             // Vorgänger von v auf NIL setzen
             res.pred[v] = res.NIL;
-        } else {
-            if (c > 0) break;
-            else c++;
         }
     }
     res.pred[s] = res.NIL;
@@ -380,7 +368,7 @@ void prim(G g, V s, Pred<V> &res) { /// TODO DEBUG
     // solange Q nicht leer ist:
     while (!Q.isEmpty()) {
         for (V v: g.successors(u)) {
-            if (ventr[v]!= nullptr && Q.contains(ventr[v]) && g.weight(u, v) < inf.dist[v]) {
+            if (ventr[v]!= nullptr && Q.contains(ventr[v]) && g.weight(u, v) < ventr[v]->prio) {
                 Q.changePrio(ventr[v], g.weight(u, v));
                 res.pred[v] = u;
             }
@@ -388,6 +376,8 @@ void prim(G g, V s, Pred<V> &res) { /// TODO DEBUG
         u = Q.extractMinimum()->data;
     }
 }
+
+
 
 // Kürzeste Wege vom Startknoten s zu allen Knoten des Graphen g mit
 // dem Algorithmus von Bellman-Ford ermitteln und das Ergebnis in res
@@ -446,10 +436,8 @@ void dijkstra(G g, V s, SP<V> &res) {
     for (V v: g.vertices()) { // Prioque initialisieren 2.
         ventr[v] = Q.insert(res.dist[v], v);
     }
-    while (!Q.isEmpty()) { //3 Solange die War teschlange nicht leer ist:
-        Entry<double, V> *min;
-        min = Q.extractMinimum(); // Entnimm knoten mit min. Prio
-        V u = min->data; // nehme daten von knoten
+    while (!Q.isEmpty()) { //3 Solange die Warteschlange nicht leer ist:
+        V u = Q.extractMinimum()->data; // nehme daten von knoten
         for (V v: g.successors(u)) { // Für jeden Nachfolger v von u
             if ((res.dist[u] + g.weight(u, v)) < res.dist[v]) {
                 res.dist[v] = res.dist[u] + g.weight(u, v);
