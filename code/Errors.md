@@ -18,7 +18,8 @@
 
 ## TOPSORT:
 + not finding all cycles is a bad thing
-+ 
+  + **FIXED:**  I did them magic with the call to recursion
++ Now finding all cycles but still delivering the wrong solution
 
 
 ## DFS
