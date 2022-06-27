@@ -10,6 +10,7 @@
    + **~~FIXED~~:** I found the error, the error are his slides.
    + **EDIT:** NOT FIXED!!!!
      + now my algorithm finds shorter paths and sometimes longer paths than the algorithm I test against
+     + **KINDA FIXED:** variance occurs because variability brought in from the prioqueue, even the same implementation run twice delivers varying results.
 ## SCC 
 + ~~still delivers NO output!~~ **FIXED:** Problem was with the transpose function, and also a call to null in the inner while loop
 + now delivers output, that is right in ~~some~~ (edit):[ALL] cases
@@ -20,6 +21,7 @@
 + not finding all cycles is a bad thing
   + **FIXED:**  I did them magic with the call to recursion
 + Now finding all cycles but still delivering the wrong solution
+  + **FIXED:** with a complete redesign
 
 
 ## DFS
@@ -31,59 +33,8 @@
   + one implementation results ````0 -> 15 -> 11 -> 10 15````
   + the other one results ````0 -> 4 -> 10 15````
   + **Both are valid ways to reach 10 from 0 with minimal weight**
-  + Same thing with a few other startnodes
-    + here node ``13``:
-    + **OTHER IMPL:**
-    ```
-    ----------------------------------------
-    Startknoten: 13
-    ----------------------------------------
-    13 -> 2 -> 7 -> 11 -> 1 11
-    13 -> 2 -> 7 -> 18 -> 4 -> 10 12
-    13 -> 2 -> 7 -> 11 9
-    13 -> 6 -> 12 5
-    13 0
-    13 -> 8 -> 14 9
-    13 -> 8 -> 15 9
-    13 -> 6 -> 12 -> 3 -> 9 -> 16 15
-    13 -> 2 -> 7 -> 18 -> 17 13
-    13 -> 2 -> 7 -> 18 7
-    13 -> 2 -> 19 8
-    13 -> 2 4
-    13 -> 6 -> 12 -> 3 10
-    13 -> 2 -> 7 -> 18 -> 4 8
-    13 -> 2 -> 7 -> 18 -> 4 -> 5 10
-    13 -> 6 1
-    13 -> 2 -> 7 5
-    13 -> 8 8
-    13 -> 6 -> 12 -> 3 -> 9 14
-    ```
-    + **MY IMPL:**
-    ```
-    ----------------------------------------
-    Startknoten: 13
-    ----------------------------------------
-    13 -> 2 -> 7 -> 11 -> 0 13
-    13 -> 2 -> 7 -> 11 -> 1 11
-    13 -> 2 -> 7 -> 18 -> 4 -> 10 12
-    13 -> 2 -> 7 -> 11 9
-    13 -> 6 -> 12 5
-    13 0
-    13 -> 8 -> 14 9
-    13 -> 8 -> 15 9
-    13 -> 2 -> 7 -> 3 -> 9 -> 16 15
-    13 -> 2 -> 7 -> 18 -> 17 13
-    13 -> 2 -> 7 -> 18 7
-    13 -> 2 -> 19 8
-    13 -> 2 4
-    13 -> 2 -> 7 -> 3 10
-    13 -> 2 -> 7 -> 18 -> 4 8
-    13 -> 2 -> 7 -> 18 -> 4 -> 5 10
-    13 -> 6 1
-    13 -> 2 -> 7 5
-    13 -> 8 8
-    13 -> 2 -> 7 -> 3 -> 9 14
-    ```
+  + **KINDA FIXED:** variance occurs because variability brought in from the prioqueue, even the same implementation run twice delivers varying results.
+
 # To - Do
 ## BFS
 + [ ] Validate
@@ -92,16 +43,16 @@
 + [x] Check for the empty ``res.seq``
 ## TOPSORT
 + [ ] Validate
-+ [ ] checks suggest that we couldn't find all cycles
++ [x] checks suggest that we couldn't find all cycles
 ## SCC
 + [ ] Validate
 + [x] Checks show NO returned data from the function
 + [x] Now data is incorrect, fix that
 ## PRIM
 + [ ] Validate
-+ [ ] Checks show that it does not always find the shortest path and sometimes a shorter path :0
++ [x] Checks show that it does not always find the shortest path and sometimes a shorter path :0
 ## BELLMAN - FORD
 + [ ] Validate
 ## DIJKSTRA
 + [ ] Validate
-+ [ ] Checks point to something being wrong, refer to the error description
++ [x] Checks point to something being wrong, refer to the error description
