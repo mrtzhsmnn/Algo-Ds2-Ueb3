@@ -259,50 +259,36 @@ bool dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
 }
 
 template<typename V, typename G>
-bool extdfs(G g, list <V> vs, DFS<V> &res, list <V> &seq) {
-    int zeitwert = 0;
-    bool kreisfrei;
-    for (V u: vs) { // für jeden Knoten u
-        if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
-            for (V v: g.successors(u)) {
-                if (res.det.count(v) && !res.fin.count(v))
-                    return false;
-                if (!res.det.count(v)) {
-                    if (!dfsCheckSuccessors(g, res, zeitwert, v)) return false;
-                }
-            }
-            res.fin[u] = ++zeitwert;
-            seq.push_back(u);
+void sucheTG(G g, list<V> &seq, DFS<V> &res, int &zeitwert, V start, bool &cycle);
+
+template<typename V, typename G>
+bool topsort(G g, list <V> &seq) {
+    DFS<V> res; // Datenstruktur für Zeiten
+    int zeitwert = 0; // Zeitwert
+    bool cycle = false; // Bool zum speichern einer Zykluserkennung
+    for (auto u:g.vertices()) { // Für jeden Knoten u el. V
+        if (cycle) return false;
+        if((!res.det.count(u))&&(!res.fin.count(u))) { // wenn u weiß ist
+            // Durchsuche den zu u gehörenden Teilgraphen -> erster call auf Rekursion
+            sucheTG(g, seq, res, zeitwert, u, cycle);
         }
     }
     return true;
 }
 
-// Topologische Sortierung des Graphen g ausführen und das Ergebnis
-// als Liste von Knoten in seq speichern.
-// Resultatwert true, wenn dies möglich ist,
-// false, wenn der Graph einen Zyklus enthält.
-// (Im zweiten Fall darf der Inhalt von seq danach undefiniert sein.)
 template<typename V, typename G>
-bool topsort(G g, list <V> &seq) {
-    int zeitwert = 0;
-    DFS<V> mem;
-    for (V u: g.vertices()) { // für jeden Knoten
-        if (!mem.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            mem.det[u] = ++zeitwert; // Anfangszeit auf zeitwert, zeitwert Iterieren
-            for (V v: g.successors(u)) {
-                if (mem.det.count(v) && !mem.fin.count(v)) return false;
-                if (!mem.det.count(v)) {
-                    if (!extdfs(g, g.successors(v), mem, seq)) return false;
-                }
-            }
-            mem.fin[u] = ++zeitwert;
-            seq.push_back(u);
+void sucheTG(G g, list<V> &seq, DFS<V> &res, int &zeitwert, V start, bool &cycle){
+    res.det[start] = ++zeitwert; // Setze Startzeit auf den nächsten Wert in der Menge
+    for (auto v: g.successors(start)){ // für jeden Nachfolger v von start
+        if (res.det.count(v)&&(!res.fin.count(v))) cycle = true; // Wenn grau, dann cycle auf true, weil Zyklus vorliegt
+        if ((!res.det.count(v))&&(!res.fin.count(v))){ // Wenn v weiß ist:
+            sucheTG(g, seq, res, zeitwert, v, cycle); // rekursiv den zu v gehörenden Teilgraphen durchsuchen.
         }
     }
-    return true;
+    res.fin[start] = ++zeitwert; // Setze Endzeit auf den nächsten Wert in der Menge
+    seq.push_back(start);
 }
+
 
 // Die starken Zusammenhangskomponenten des Graphen g ermitteln
 // und das Ergebnis als Liste von Listen von Knoten in res speichern.
