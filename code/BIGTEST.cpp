@@ -1168,9 +1168,9 @@ void testout(int mode, Graph<V> *g, int graphnr) {
             break;
         }
         case 4: { // PRIM
-            Pred<V> res;
+            SP<V> res;
             for (V s: g->vertices()) {
-                if (graphnr < 30) {
+                if (graphnr < 30||graphnr > 39) {
                     cout << "Nur fuer unger. und gew. Graphen!" << endl;
                     break; // nur für gewichtete Graphen
                 }
@@ -1180,7 +1180,7 @@ void testout(int mode, Graph<V> *g, int graphnr) {
                 prim(*(WeightedGraph<V> *) g, s, res);
                 for (V v: g->vertices()) {
                     path(s, v, res);
-                    cout << endl;
+                    cout << " " << res.dist[v] << endl;
                 }
             }
             break;
@@ -1218,7 +1218,7 @@ void testout(int mode, Graph<V> *g, int graphnr) {
                 cout << "----------------------------------------" << endl;
                 dijkstra(*(WeightedGraph<V> *) g, s, res);
                 for (V v: g->vertices()) {
-                    path("A", v, res);
+                    path(s, v, res);
                     cout << " " << res.dist[v] << endl;
                 }
             }

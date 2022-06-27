@@ -208,8 +208,8 @@ void bfs(G g, V s, BFS<V> &res) {  //works
 }
 
 template<typename V, typename G>
-void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName);
-
+bool dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName);
+enum colour{weis,grau,schwarz}; //datentyp für knotenfarbe
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
 // Reihenfolge des Containers g.vertices() durchlaufen.
@@ -223,19 +223,6 @@ void dfs(G g, DFS<V> &res) {//works
             dfsCheckSuccessors(g, res, zeitwert, u);
             res.fin[u] = ++zeitwert;
             res.seq.push_back(u);
-        }
-    }
-}
-
-template<typename V, typename G>
-void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
-    for (V v: g.successors(nodeName)) {
-        //res.pred[v] = nodeName;
-        if (!res.det.count(v)) {
-            res.det[v] = ++zeitwert;
-            dfsCheckSuccessors(g, res, zeitwert, v);
-            res.fin[v] = ++zeitwert;
-            res.seq.push_back(v);
         }
     }
 }
@@ -256,19 +243,33 @@ void dfs(G g, list <V> vs, DFS<V> &res) {
         }
     }
 }
-
+template<typename V, typename G>
+bool dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
+    for (V v: g.successors(nodeName)) {
+        //res.pred[v] = nodeName;
+        if (!res.det.count(v)) {
+            if (res.det.count(v) && !res.fin.count(v)) return false;
+            res.det[v] = ++zeitwert;
+            if (!dfsCheckSuccessors(g, res, zeitwert, v)) return false;
+            res.fin[v] = ++zeitwert;
+            res.seq.push_back(v);
+        }
+    }
+    return true;
+}
 
 template<typename V, typename G>
 bool extdfs(G g, list <V> vs, DFS<V> &res, list <V> &seq) {
     int zeitwert = 0;
+    bool kreisfrei;
     for (V u: vs) { // für jeden Knoten u
         if (!res.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
             res.det[u] = ++zeitwert; // Anfangszeit auf zeitwert
             for (V v: g.successors(u)) {
-                if (!res.det.count(v)) {
-                    dfsCheckSuccessors(g, res, zeitwert, v);
-                } else if (!res.fin.count(v)) { // Zyklus!
+                if (res.det.count(v) && !res.fin.count(v))
                     return false;
+                if (!res.det.count(v)) {
+                    if (!dfsCheckSuccessors(g, res, zeitwert, v)) return false;
                 }
             }
             res.fin[u] = ++zeitwert;
@@ -285,22 +286,18 @@ bool extdfs(G g, list <V> vs, DFS<V> &res, list <V> &seq) {
 // (Im zweiten Fall darf der Inhalt von seq danach undefiniert sein.)
 template<typename V, typename G>
 bool topsort(G g, list <V> &seq) {
-    int zeitwert = 1;
-    bool kreisfrei;
+    int zeitwert = 0;
     DFS<V> mem;
-    for (V u: g.vertices()) { // für jeden Knoten u
+    for (V u: g.vertices()) { // für jeden Knoten
         if (!mem.det.count(u)) { // weiß ? (Wenn noch keine Anfangszeit existiert)
-            mem.det[u] = zeitwert; // Anfangszeit auf zeitwert
-            zeitwert++; // zeitwert Iterieren
+            mem.det[u] = ++zeitwert; // Anfangszeit auf zeitwert, zeitwert Iterieren
             for (V v: g.successors(u)) {
+                if (mem.det.count(v) && !mem.fin.count(v)) return false;
                 if (!mem.det.count(v)) {
-                    //if (mem.det.count(u) && !mem.fin.count(u)) mem.pred[v] = u;
-                    kreisfrei = extdfs(g, g.successors(v), mem, seq);
-                    if (!kreisfrei) return false;
+                    if (!extdfs(g, g.successors(v), mem, seq)) return false;
                 }
             }
-            mem.fin[u] = zeitwert;
-            zeitwert++;
+            mem.fin[u] = ++zeitwert;
             seq.push_back(u);
         }
     }
