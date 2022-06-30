@@ -208,7 +208,7 @@ void bfs(G g, V s, BFS<V> &res) {  //works
 }
 
 template<typename V, typename G>
-bool dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName);
+void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName);
 enum colour{weis,grau,schwarz}; //datentyp für knotenfarbe
 // Tiefensuche im Graphen g ausführen und das Ergebnis in res speichern.
 // In der Hauptschleife des Algorithmus werden die Knoten in der
@@ -244,23 +244,25 @@ void dfs(G g, list <V> vs, DFS<V> &res) {
     }
 }
 template<typename V, typename G>
-bool dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
+void dfsCheckSuccessors(G g, DFS<V> &res, int &zeitwert, V nodeName) {
     for (V v: g.successors(nodeName)) {
-        //res.pred[v] = nodeName;
         if (!res.det.count(v)) {
-            if (res.det.count(v) && !res.fin.count(v)) return false;
             res.det[v] = ++zeitwert;
-            if (!dfsCheckSuccessors(g, res, zeitwert, v)) return false;
+            dfsCheckSuccessors(g, res, zeitwert, v);
             res.fin[v] = ++zeitwert;
             res.seq.push_back(v);
         }
     }
-    return true;
 }
 
 template<typename V, typename G>
 void sucheTG(G g, list<V> &seq, DFS<V> &res, int &zeitwert, V start, bool &cycle);
 
+// Topologische Sortierung des Graphen g ausführen und das Ergebnis
+// als Liste von Knoten in seq speichern.
+// Resultatwert true, wenn dies möglich ist,
+// false, wenn der Graph einen Zyklus enthält.
+// (Im zweiten Fall darf der Inhalt von seq danach undefiniert sein.)
 template<typename V, typename G>
 bool topsort(G g, list <V> &seq) {
     DFS<V> res; // Datenstruktur für Zeiten
@@ -376,14 +378,10 @@ bool bellmanFord(G g, V s, SP<V> &res) { //works vermutl.
     }
     res.dist[s] = 0;
     //Berechnung der Knotenanzahl
-    int Knoten = 0;
-    for (pair<V, list < V>> p : g.adj) {
-        ++Knoten;
-    }
+    int Knoten = g.vertices().size();
     for (int i = 0; i < Knoten; i++) {
-        for (pair<V, list <V>> p : g.adj) {
-            V u = p.first;
-            for (V v: p.second) {
+        for (auto u: g.vertices()) {
+            for (auto v: g.successors(u)) {
                 if ((res.dist[u] + g.weight(u, v)) < res.dist[v]) {
                     res.dist[v] = res.dist[u] + g.weight(u, v);
                     res.pred[v] = u;
@@ -391,9 +389,8 @@ bool bellmanFord(G g, V s, SP<V> &res) { //works vermutl.
             }
         }
     }
-    for (pair<V, list < V>> p : g.adj) {
-        V u = p.first;
-        for (V v: p.second) {
+    for (auto u: g.vertices()) {
+        for (auto v: g.successors(u)) {
             if ((res.dist[u] + g.weight(u, v)) < res.dist[v]) { //aka delta von u
                 return false;
             }
