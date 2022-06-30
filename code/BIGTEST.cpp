@@ -1180,7 +1180,7 @@ void testout(int mode, Graph<V> *g, int graphnr) {
                 prim(*(WeightedGraph<V> *) g, s, res);
                 for (V v: g->vertices()) {
                     path(s, v, res);
-                    cout << " " << res.dist[v] << endl;
+                    cout << " " << endl;
                 }
             }
             break;
